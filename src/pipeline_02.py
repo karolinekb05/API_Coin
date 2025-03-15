@@ -7,6 +7,19 @@ from typing import Dict
 from psycopg2.extras import RealDictCursor
 import os
 from dotenv import load_dotenv
+import logging
+
+# Configuração do logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('crypto_pipeline.log'),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger('crypto_pipeline')
 
 load_dotenv()
 
@@ -31,15 +44,17 @@ def get_db_connection():
             host=DB_HOST,
             port=DB_PORT
         )
+        logger.info("Conexão com o banco de dados estabelecida com sucesso")
         return conn
     except Exception as e:
-        print(f"Erro ao conectar ao banco de dados: {e}")
+        logger.error(f"Erro ao conectar ao banco de dados: {e}")
         return None
 
 def create_table():
     """
     Cria a tabela se ela não existir
     """
+    logger.info("Iniciando criação da tabela crypto_prices")
     conn = get_db_connection()
     if conn:
         try:
@@ -54,23 +69,28 @@ def create_table():
                     )
                 """)
                 conn.commit()
+                logger.info("Tabela crypto_prices criada/verificada com sucesso")
         except Exception as e:
-            print(f"Erro ao criar tabela: {e}")
+            logger.error(f"Erro ao criar tabela: {e}")
         finally:
             conn.close()
+            logger.debug("Conexão fechada após criação/verificação da tabela")
 
 def extract_data(url: str) -> Dict:
     """
     Extrai dados da URL fornecida
     """
+    logger.info(f"Iniciando extração de dados da URL: {url}")
     response = requests.get(url)
     data = response.json()
+    logger.debug(f"Dados extraídos com sucesso: {data}")
     return data
 
 def transform_data(data: Dict) -> Dict:
     """
     Transforma os dados
     """
+    logger.info("Iniciando transformação dos dados")
     valor = float(data["data"]["amount"])
     moeda = data["data"]["currency"]
     cripto = data["data"]["base"]
@@ -82,12 +102,14 @@ def transform_data(data: Dict) -> Dict:
         "cripto": cripto,
         "data_atual": data_atual
     }
+    logger.debug(f"Dados transformados: {dados_transformados}")
     return dados_transformados
 
 def load_data(dados_transformados: Dict) -> None:
     """
     Carrega os dados no PostgreSQL
     """
+    logger.info("Iniciando carregamento dos dados no PostgreSQL")
     conn = get_db_connection()
     if conn:
         try:
@@ -102,14 +124,15 @@ def load_data(dados_transformados: Dict) -> None:
                     dados_transformados['data_atual']
                 ))
                 conn.commit()
-                print(f"Dados salvos com sucesso no PostgreSQL: Valor: {dados_transformados['valor']}, Moeda: {dados_transformados['moeda']}, Cripto: {dados_transformados['cripto']}")
+                logger.info(f"Dados salvos com sucesso: Valor: {dados_transformados['valor']}, Moeda: {dados_transformados['moeda']}, Cripto: {dados_transformados['cripto']}")
         except Exception as e:
-            print(f"Erro ao inserir dados: {e}")
+            logger.error(f"Erro ao inserir dados: {e}")
         finally:
             conn.close()
+            logger.debug("Conexão fechada após inserção dos dados")
 
 if __name__ == "__main__":
-    # Cria a tabela se não existir
+    logger.info("Iniciando pipeline de dados de criptomoedas")
     create_table()
     
     while True:
@@ -117,7 +140,8 @@ if __name__ == "__main__":
             data = extract_data(url)
             dados_transformados = transform_data(data)
             load_data(dados_transformados)
+            logger.info("Ciclo de pipeline completado com sucesso")
             time.sleep(10)
         except Exception as e:
-            print(f"Erro durante a execução: {e}")
+            logger.error(f"Erro durante a execução do pipeline: {e}")
             time.sleep(10)  # Continua tentando mesmo em caso de erro 

@@ -1,0 +1,10 @@
+2025-03-15 16:15:06,874 - crypto_pipeline - INFO - Iniciando pipeline de dados de criptomoedas
+2025-03-15 16:15:06,874 - crypto_pipeline - INFO - Iniciando criação da tabela crypto_prices
+2025-03-15 16:15:08,431 - crypto_pipeline - INFO - Conexão com o banco de dados estabelecida com sucesso
+2025-03-15 16:15:09,249 - crypto_pipeline - INFO - Tabela crypto_prices criada/verificada com sucesso
+2025-03-15 16:15:09,250 - crypto_pipeline - INFO - Iniciando extração de dados da URL: https://api.coinbase.com/v2/prices/spot
+2025-03-15 16:15:09,502 - crypto_pipeline - INFO - Iniciando transformação dos dados
+2025-03-15 16:15:09,503 - crypto_pipeline - INFO - Iniciando carregamento dos dados no PostgreSQL
+2025-03-15 16:15:10,838 - crypto_pipeline - INFO - Conexão com o banco de dados estabelecida com sucesso
+2025-03-15 16:15:11,492 - crypto_pipeline - INFO - Dados salvos com sucesso: Valor: 84194.755, Moeda: USD, Cripto: BTC
+2025-03-15 16:15:11,493 - crypto_pipeline - INFO - Ciclo de pipeline completado com sucesso
