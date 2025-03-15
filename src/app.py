@@ -26,7 +26,8 @@ def carregar_dados():
 # Carregar dados em um DataFrame
 df = carregar_dados()
 
-# Converter timestamp para datetime se existir
+# Converter valor para float e timestamp para datetime
+df['valor'] = df['valor'].astype(float)
 if 'data_atual' in df.columns:
     df['data_atual'] = pd.to_datetime(df['data_atual'], unit='s')
 
@@ -34,11 +35,11 @@ if 'data_atual' in df.columns:
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    ultimo_valor = float(df['valor'].iloc[-1])
+    ultimo_valor = df['valor'].iloc[-1]
     st.metric(
         label="Último Valor",
         value=f"${ultimo_valor:,.2f}",
-        delta=f"{float(df['valor'].iloc[-1]) - float(df['valor'].iloc[-2]):,.2f}"
+        delta=f"{df['valor'].iloc[-1] - df['valor'].iloc[-2]:,.2f}"
     )
 
 with col2:
@@ -56,11 +57,13 @@ with col3:
 # Gráfico de linha
 st.subheader("Histórico de Preços")
 fig_data = pd.DataFrame({
-    'Valor': df['valor'].astype(float)
+    'Valor': df['valor']
 })
 
 st.line_chart(fig_data)
 
 # Tabela de dados
 st.subheader("Dados Detalhados")
-st.dataframe(df.style.format({'valor': '${:,.2f}'})) 
+df_display = df.copy()
+df_display['valor'] = df_display['valor'].apply(lambda x: f'${x:,.2f}')
+st.dataframe(df_display) 
