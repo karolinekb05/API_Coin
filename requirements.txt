@@ -10,4 +10,6 @@ flake8>=4.0.0
 python-binance>=1.0.16
 ccxt>=2.0.0
 schedule>=1.1.0
-tqdm>=4.64.0 
+tqdm>=4.64.0
+streamlit>=1.32.0
+pandas>=2.0.0 
