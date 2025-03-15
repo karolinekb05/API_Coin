@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import pandas as pd
+import plotly.graph_objects as go
 from datetime import datetime
 
 # Configuração da página
@@ -54,16 +55,73 @@ with col3:
         value=df['cripto'].iloc[-1]
     )
 
-# Gráfico de linha
+# Gráfico de linha com Plotly
 st.subheader("Histórico de Preços")
-fig_data = pd.DataFrame({
-    'Valor': df['valor']
-})
 
-st.line_chart(fig_data)
+# Criar figura do Plotly
+fig = go.Figure()
+
+# Adicionar linha
+fig.add_trace(
+    go.Scatter(
+        x=df.index if 'data_atual' not in df.columns else df['data_atual'],
+        y=df['valor'],
+        mode='lines+markers',
+        name='Valor BTC',
+        hovertemplate='<b>Valor:</b> $%{y:,.2f}<extra></extra>'
+    )
+)
+
+# Configurar layout
+fig.update_layout(
+    yaxis=dict(
+        title='Valor em USD',
+        tickformat='$,.2f',
+        gridcolor='rgba(211,211,211,0.3)',
+    ),
+    xaxis=dict(
+        title='Tempo',
+        gridcolor='rgba(211,211,211,0.3)',
+    ),
+    plot_bgcolor='white',
+    hovermode='x unified',
+    showlegend=False,
+    height=500
+)
+
+# Exibir gráfico
+st.plotly_chart(fig, use_container_width=True)
+
+# Estatísticas adicionais
+st.subheader("Estatísticas")
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric(
+        "Valor Máximo",
+        f"${df['valor'].max():,.2f}"
+    )
+
+with col2:
+    st.metric(
+        "Valor Mínimo",
+        f"${df['valor'].min():,.2f}"
+    )
+
+with col3:
+    st.metric(
+        "Média",
+        f"${df['valor'].mean():,.2f}"
+    )
+
+with col4:
+    st.metric(
+        "Variação Total",
+        f"${df['valor'].max() - df['valor'].min():,.2f}"
+    )
 
 # Tabela de dados
 st.subheader("Dados Detalhados")
 df_display = df.copy()
 df_display['valor'] = df_display['valor'].apply(lambda x: f'${x:,.2f}')
-st.dataframe(df_display) 
+st.dataframe(df_display, use_container_width=True) 
