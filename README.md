@@ -94,10 +94,6 @@ api-coin/
 ## 📝 Licença
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## 📧 Contato
-Seu Nome - [@seu_twitter](https://twitter.com/seu_twitter)
-Email - seu_email@exemplo.com
-
 ## 🙏 Agradecimentos
 - [CoinGecko API](https://www.coingecko.com/en/api) - Dados de mercado
 - [Binance API](https://binance-docs.github.io/apidocs/) - Dados em tempo real
