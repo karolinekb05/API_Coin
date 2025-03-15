@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime
+import os
 
 # Configuração da página
 st.set_page_config(
@@ -16,7 +17,11 @@ st.title("📊 Dashboard de Criptomoedas")
 
 # Carregar dados do arquivo JSON
 def carregar_dados():
-    with open('dados_cripto.json', 'r') as file:
+    # Obter o diretório do projeto
+    projeto_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    arquivo_json = os.path.join(projeto_dir, 'dados_cripto.json')
+    
+    with open(arquivo_json, 'r') as file:
         data = json.load(file)
         # Converter dados para formato de lista
         records = []
